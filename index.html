@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task 4: Full Project Implementation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    header {
+      background-color: #05445E;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    section {
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+      background-color: #fff;
+      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #189AB4;
+    }
+    .project, .todo, .products, .contact-form {
+      margin-bottom: 30px;
+    }
+    input, select, textarea, button {
+      margin: 5px 0;
+      padding: 10px;
+      width: 100%;
+      max-width: 500px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #189AB4;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #05445E;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      background: #E7F6F2;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .product-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Full Project Implementation</h1>
+  </header>
+
+  <section class="project">
+    <h2>About</h2>
+    <p>I am a web developer passionate about building interactive websites and solving problems with code.</p>
+
+    <h2>Projects</h2>
+    <ul>
+      <li>Portfolio Website</li>
+      <li>To-Do List App with localStorage</li>
+      <li>Product Filter Page</li>
+    </ul>
+  </section>
+
+  <section class="todo">
+    <h2>To-Do List</h2>
+    <input type="text" id="taskInput" placeholder="Enter a task">
+    <button onclick="addTask()">Add Task</button>
+    <ul id="taskList"></ul>
+  </section>
+
+  <section class="products">
+    <h2>Product Filter</h2>
+    <label for="filterCategory">Category:</label>
+    <select id="filterCategory" onchange="filterProducts()">
+      <option value="all">All</option>
+      <option value="electronics">Electronics</option>
+      <option value="clothing">Clothing</option>
+      <option value="books">Books</option>
+    </select>
+
+    <label for="filterRating">Min Rating:</label>
+    <select id="filterRating" onchange="filterProducts()">
+      <option value="0">All</option>
+      <option value="3">3+</option>
+      <option value="4">4+</option>
+      <option value="5">5</option>
+    </select>
+    
+    <div id="productList"></div>
+  </section>
+
+  <section class="contact-form">
+    <h2>Contact Me</h2>
+    <form onsubmit="event.preventDefault(); alert('Message Sent!');">
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Your Email" required>
+      <textarea rows="4" placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+
+  <script>
+    // To-Do
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const taskList = document.getElementById('taskList');
+
+    function addTask() {
+      const input = document.getElementById('taskInput');
+      if (input.value.trim() !== '') {
+        tasks.push(input.value);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        renderTasks();
+        input.value = '';
+      }
+    }
+
+    function renderTasks() {
+      taskList.innerHTML = '';
+      tasks.forEach((task, i) => {
+        const li = document.createElement('li');
+        li.textContent = task;
+        li.onclick = () => {
+          tasks.splice(i, 1);
+          localStorage.setItem('tasks', JSON.stringify(tasks));
+          renderTasks();
+        };
+        taskList.appendChild(li);
+      });
+    }
+
+    renderTasks();
+
+    // Products
+    const products = [
+      { name: 'Smartphone', category: 'electronics', rating: 4, description: 'Latest 5G Android phone' },
+      { name: 'T-shirt', category: 'clothing', rating: 3, description: '100% cotton casual wear' },
+      { name: 'Book: HTML Basics', category: 'books', rating: 5, description: 'Beginner guide to HTML' },
+      { name: 'Headphones', category: 'electronics', rating: 5, description: 'Noise-cancelling over-ear headphones' },
+      { name: 'Jeans', category: 'clothing', rating: 4, description: 'Slim fit blue denim jeans' },
+      { name: 'Book: CSS Mastery', category: 'books', rating: 4, description: 'Advanced CSS techniques' },
+      { name: 'Bluetooth Speaker', category: 'electronics', rating: 3, description: 'Portable speaker with bass boost' },
+      { name: 'Jacket', category: 'clothing', rating: 5, description: 'Winter wear, waterproof jacket' },
+      { name: 'Book: JavaScript Secrets', category: 'books', rating: 5, description: 'Tips and tricks for JS devs' }
+    ];
+
+    function filterProducts() {
+      const category = document.getElementById('filterCategory').value;
+      const minRating = parseInt(document.getElementById('filterRating').value);
+      const productList = document.getElementById('productList');
+      productList.innerHTML = '';
+
+      const filtered = products.filter(product =>
+        (category === 'all' || product.category === category) &&
+        product.rating >= minRating
+      );
+
+      filtered.forEach(product => {
+        const div = document.createElement('div');
+        div.className = 'product-item';
+        div.innerHTML = `<strong>${product.name}</strong> <br>
+          Category: ${product.category} <br>
+          Rating: ${product.rating} ⭐ <br>
+          Description: ${product.description}`;
+        productList.appendChild(div);
+      });
+    }
+
+    filterProducts();
+  </script>
+</body>
+</html>
